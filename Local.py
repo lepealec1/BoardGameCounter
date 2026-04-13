@@ -114,7 +114,7 @@ for name, data in st.session_state.counters.items():
         )
 
         # BUTTON ROW (TRUE STREAMLIT LAYOUT)
-        c1, c2, c3 = st.columns(3)
+        c1, c2, c3 = st.columns(3,gap="xxsmall")
 
         with c1:
             if st.button("➖", key=f"dec_{name}"):
