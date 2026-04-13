@@ -1,36 +1,48 @@
-
 import streamlit as st
+
 st.markdown("""
 <style>
 
-/* SAFE wrapper spacing only */
+/* ENTIRE number input container */
 div[data-testid="stNumberInput"] {
-    margin-bottom: 18px;
+    height: 90px !important;
+    margin-bottom: 14px;
 }
 
-/* input text ONLY */
+/* input field (middle box) */
 div[data-testid="stNumberInput"] input {
-    font-size: 26px !important;
+    font-size: 30px !important;
+    height: 35px !important;
+#    color: black;
     text-align: center;
 }
 
-/* buttons ONLY (no height forcing on container) */
+            
+#div[data-testid="stNumberInput"] input {
+ #   background-color: #white;
+#    color: white;
+#}
+
+/* + / - buttons */
 div[data-testid="stNumberInput"] button {
-    font-size: 26px !important;
-    width: 60px !important;
-    height: 60px !important;
-    border-radius: 12px !important;
+    font-size: 30px !important;
+    width: 300px !important;
+    height: 40px !important;
+    border-radius: 14px !important;
 }
 
-/* prevent weird flex stretching */
+/* make layout feel less cramped */
 div[data-testid="stNumberInput"] > div {
-    align-items: center !important;
-    overflow: visible !important;
+    align-items: stretch;
 }
 
 </style>
 """, unsafe_allow_html=True)
+
+
+
 st.set_page_config(page_title="Board Game Counter", layout="centered")
+
 
 st.title("🎲 Counter App")
 
