@@ -1,5 +1,4 @@
 import streamlit as st
-import math
 
 st.set_page_config(page_title="Board Game Counter", layout="centered")
 
@@ -137,7 +136,7 @@ with col3:
         st.rerun()
 
 with col4:
-    if st.button("🎯 Reset All (Custom)"):
+    if st.button("🎯 Reset All to Per-Counter Value"):
         for k in st.session_state.counters:
             st.session_state.counters[k]["value"] = st.session_state.counters[k]["reset"]
         st.rerun()
@@ -169,23 +168,19 @@ div.stButton > button {
     border-radius: 10px;
 }
 
-/* CENTER BUTTON ROW */
-.btn-row {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
+/* optional spacing tuning */
+.counter-btn-row {
     margin-top: 6px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# AUTO GRID RENDER (NO ROW/COLUMN INPUTS)
+# GRID RENDER
 # -------------------------
 items = list(st.session_state.counters.items())
 
-# auto column count based on screen feel
-cols = 2  # stable mobile-friendly default
+cols = 2  # mobile-friendly default grid
 
 for i in range(0, len(items), cols):
 
@@ -200,6 +195,7 @@ for i in range(0, len(items), cols):
 
         with cols_ui[j]:
 
+            # CARD
             st.markdown(
                 f"""
                 <div class="counter-card" style="background-color:{color_hex};">
@@ -210,8 +206,8 @@ for i in range(0, len(items), cols):
                 unsafe_allow_html=True
             )
 
-            # CENTERED BUTTONS
-            b1, b2, b3 = st.columns([1, 1, 1])
+            # BUTTONS: ➖ LEFT | RESET CENTER | ➕ RIGHT
+            b1, b2, b3 = st.columns([1, 2, 1])
 
             with b1:
                 if st.button("➖", key=f"dec_{name}"):
