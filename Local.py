@@ -1,3 +1,4 @@
+
 import streamlit as st
 
 st.set_page_config(page_title="Counter Game", layout="centered")
@@ -78,12 +79,6 @@ st.markdown("""
     margin-bottom:10px;
 }
 
-div.stButton > button {
-    width: 100% !important;
-    height: 44px !important;
-    font-size: 16px !important;
-    border-radius: 10px !important;
-}
 </style>
 """, unsafe_allow_html=True)
 
