@@ -27,19 +27,19 @@ num_counters = st.number_input("Number of counters", 1, 20, 4)
 step = st.number_input("Step", 1, 10, 1)
 
 # -------------------------
-# INIT
+# INIT STATE
 # -------------------------
 if "counters" not in st.session_state:
     st.session_state.counters = {}
 
 if len(st.session_state.counters) != num_counters:
-    colors = ["Blue", "Red", "Green", "Yellow"]
+    base_colors = ["Blue", "Red", "Green", "Yellow"]
 
     st.session_state.counters = {
         f"Counter {i+1}": {
             "value": 0,
             "reset": 0,
-            "color": colors[i] if i < 4 else "White"
+            "color": base_colors[i] if i < 4 else "White"
         }
         for i in range(num_counters)
     }
@@ -61,61 +61,72 @@ with col2:
 st.divider()
 
 # -------------------------
-# STYLES (ONLY FOR VISUAL)
+# STYLE (REAL CARD LOOK)
 # -------------------------
 st.markdown("""
 <style>
-.big {
-    font-size: 40px;
-    font-weight: bold;
-    text-align: center;
+.card-title {
+    text-align:center;
+    font-size:18px;
+    font-weight:600;
 }
 
-.title {
-    font-size: 18px;
-    font-weight: 600;
-    text-align: center;
+.card-value {
+    text-align:center;
+    font-size:44px;
+    font-weight:bold;
+    margin-bottom:10px;
+}
+
+div.stButton > button {
+    width: 100% !important;
+    height: 44px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# TRUE STREAMLIT CARDS
+# RENDER CARDS
 # -------------------------
 for name, data in st.session_state.counters.items():
 
     color = COLOR_MAP.get(data["color"], "#FFFFFF")
 
-    st.markdown(
-        f"""
-        <div style="
-            background:{color};
-            padding:16px;
-            border-radius:16px;
-            border:1px solid #ddd;
-            text-align:center;
-        ">
-            <div class="title">{name}</div>
-            <div class="big">{data['value']}</div>
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    # CARD CONTAINER (REAL STREAMLIT BLOCK)
+    with st.container():
 
-    # THIS IS NOW ACTUALLY INSIDE THE FLOW (NOT HTML)
-    c1, c2, c3 = st.columns(3, gap="small")
+        st.markdown(
+            f"""
+            <div style="
+                background:{color};
+                padding:14px;
+                border-radius:16px;
+                border:1px solid #ddd;
+                margin-bottom:10px;
+            ">
+                <div class="card-title">{name}</div>
+                <div class="card-value">{data['value']}</div>
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
 
-    with c1:
-        if st.button("➖", key=f"dec_{name}"):
-            st.session_state.counters[name]["value"] -= step
-            st.rerun()
+        # BUTTON ROW (TRUE STREAMLIT LAYOUT)
+        c1, c2, c3 = st.columns(3, gap="small")
 
-    with c2:
-        if st.button(f"{data['reset']}", key=f"reset_{name}"):
-            st.session_state.counters[name]["value"] = data["reset"]
-            st.rerun()
+        with c1:
+            if st.button("➖", key=f"dec_{name}"):
+                st.session_state.counters[name]["value"] -= step
+                st.rerun()
 
-    with c3:
-        if st.button("➕", key=f"inc_{name}"):
-            st.session_state.counters[name]["value"] += step
-            st.rerun()
+        with c2:
+            if st.button(f"{data['reset']}", key=f"reset_{name}"):
+                st.session_state.counters[name]["value"] = data["reset"]
+                st.rerun()
+
+        with c3:
+            if st.button("➕", key=f"inc_{name}"):
+                st.session_state.counters[name]["value"] += step
+                st.rerun()
