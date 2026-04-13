@@ -1,4 +1,5 @@
 import streamlit as st
+import math
 
 st.set_page_config(page_title="Board Game Counter", layout="centered")
 
@@ -29,19 +30,6 @@ DEFAULT_NAMES = ["Counter 1", "Counter 2", "Counter 3", "Counter 4"]
 DEFAULT_COLORS = ["Blue", "Red", "Green", "Yellow"]
 
 # -------------------------
-# GRID INPUTS
-# -------------------------
-col1, col2 = st.columns(2)
-
-with col1:
-    rows = st.number_input("Rows", min_value=1, max_value=10, value=2, step=1)
-
-with col2:
-    cols = st.number_input("Columns", min_value=1, max_value=10, value=2, step=1)
-
-grid_size = rows * cols
-
-# -------------------------
 # COUNTER COUNT
 # -------------------------
 num_counters = int(
@@ -53,15 +41,6 @@ num_counters = int(
         step=1
     )
 )
-
-# -------------------------
-# WARNING
-# -------------------------
-if grid_size < num_counters:
-    st.warning(
-        f"⚠️ Grid size ({grid_size}) is too small for {num_counters} counters. "
-        "Some counters will not be visible."
-    )
 
 # -------------------------
 # INIT STATE
@@ -166,7 +145,7 @@ with col4:
 st.divider()
 
 # -------------------------
-# STYLES (MOBILE SAFE BUTTON CENTERING)
+# STYLES
 # -------------------------
 st.markdown("""
 <style>
@@ -184,14 +163,13 @@ st.markdown("""
     margin: 8px 0;
 }
 
-/* Make buttons consistent */
 div.stButton > button {
     height: 42px;
     font-size: 14px;
     border-radius: 10px;
 }
 
-/* FLEX CENTER FIX (iOS SAFE) */
+/* CENTER BUTTON ROW */
 .btn-row {
     display: flex;
     justify-content: center;
@@ -202,28 +180,26 @@ div.stButton > button {
 """, unsafe_allow_html=True)
 
 # -------------------------
-# GRID RENDER
+# AUTO GRID RENDER (NO ROW/COLUMN INPUTS)
 # -------------------------
 items = list(st.session_state.counters.items())
-index = 0
 
-for r in range(rows):
+# auto column count based on screen feel
+cols = 2  # stable mobile-friendly default
 
+for i in range(0, len(items), cols):
+
+    row_items = items[i:i + cols]
     cols_ui = st.columns(cols)
 
-    for c in range(cols):
+    for j, (name, data) in enumerate(row_items):
 
-        if index >= len(items):
-            break
-
-        name, data = items[index]
         value = data["value"]
         reset_val = data["reset"]
         color_hex = COLOR_MAP.get(data["color"], "#FFFFFF")
 
-        with cols_ui[c]:
+        with cols_ui[j]:
 
-            # CARD
             st.markdown(
                 f"""
                 <div class="counter-card" style="background-color:{color_hex};">
@@ -234,10 +210,8 @@ for r in range(rows):
                 unsafe_allow_html=True
             )
 
-            # CENTERED BUTTON ROW (iOS FIXED)
-            st.markdown("<div class='btn-row'>", unsafe_allow_html=True)
-
-            b1, b2, b3 = st.columns(3)
+            # CENTERED BUTTONS
+            b1, b2, b3 = st.columns([1, 1, 1])
 
             with b1:
                 if st.button("➖", key=f"dec_{name}"):
@@ -253,7 +227,3 @@ for r in range(rows):
                 if st.button("➕", key=f"inc_{name}"):
                     st.session_state.counters[name]["value"] += step
                     st.rerun()
-
-            st.markdown("</div>", unsafe_allow_html=True)
-
-        index += 1
