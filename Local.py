@@ -26,7 +26,7 @@ div[data-testid="stNumberInput"] input {
 /* + / - buttons */
 div[data-testid="stNumberInput"] button {
     font-size: 30px !important;
-    width: 300px !important;
+    width: 100px !important;
     height: 40px !important;
     border-radius: 14px !important;
 }
