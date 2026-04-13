@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Board Game Counter", layout="centered")
 
-st.title("🎲 Counter")
+st.title("🎲 Counter App")
 
 # -------------------------
 # COLORS
@@ -20,102 +20,116 @@ COLOR_MAP = {
     "White": "#FFFFFF",
 }
 
+COLOR_NAMES = list(COLOR_MAP.keys())
+
 # -------------------------
 # SETTINGS
 # -------------------------
-num_counters = st.number_input("Number of counters", 1, 20, 4)
-step = st.number_input("Step", 1, 10, 1)
+num_counters = int(st.number_input("Number of counters", 1, 20, 4))
 
 # -------------------------
 # INIT STATE
 # -------------------------
-if "counters" not in st.session_state:
-    base_colors = ["Blue", "Red", "Green", "Yellow"]
+if "counter_values" not in st.session_state:
+    st.session_state.counter_values = [20] * num_counters
 
-    st.session_state.counters = {
-        f"Counter {i+1}": {
-            "value": 0,
-            "reset": 0,
-            "color": base_colors[i] if i < 4 else "White"
-        }
-        for i in range(num_counters)
-    }
+if "counter_names" not in st.session_state:
+    st.session_state.counter_names = [f"Counter {i+1}" for i in range(num_counters)]
 
-if "selected" not in st.session_state:
-    st.session_state.selected = list(st.session_state.counters.keys())[0]
+if "counter_colors" not in st.session_state:
+    base = ["Blue", "Red", "Green", "Yellow"]
+    st.session_state.counter_colors = (base * num_counters)[:num_counters]
 
-# -------------------------
-# CLICK TO SELECT COUNTER
-# -------------------------
-st.markdown("### Select Counter")
+if "counter_steps" not in st.session_state:
+    st.session_state.counter_steps = [1] * num_counters
 
-cols = st.columns(len(st.session_state.counters))
-
-for i, name in enumerate(st.session_state.counters.keys()):
-    with cols[i]:
-        if st.button(name, key=f"select_{name}"):
-            st.session_state.selected = name
-            st.rerun()
-
-st.markdown(f"### Selected: **{st.session_state.selected}**")
 
 # -------------------------
-# GLOBAL CONTROLS (ONLY ONE SET)
+# RESIZE SAFE
 # -------------------------
-c1, c2, c3 = st.columns(3)
+def resize(lst, default):
+    lst = list(lst)
+    return (lst + [default] * num_counters)[:num_counters]
 
-with c1:
-    if st.button("➖"):
-        st.session_state.counters[st.session_state.selected]["value"] -= step
-        st.rerun()
 
-with c2:
-    if st.button("0"):
-        st.session_state.counters[st.session_state.selected]["value"] = \
-            st.session_state.counters[st.session_state.selected]["reset"]
-        st.rerun()
+st.session_state.counter_values = resize(st.session_state.counter_values, 20)
+st.session_state.counter_names = resize(st.session_state.counter_names, "Counter")
+st.session_state.counter_colors = resize(st.session_state.counter_colors, "White")
+st.session_state.counter_steps = resize(st.session_state.counter_steps, 1)
 
-with c3:
-    if st.button("➕"):
-        st.session_state.counters[st.session_state.selected]["value"] += step
-        st.rerun()
 
 # -------------------------
-# GLOBAL RESET
+# CUSTOMIZE COUNTERS (MATRIX)
 # -------------------------
-global_reset = st.number_input("Global reset value", 0, 100, 0)
+with st.expander("✏️ Customize Counters"):
 
-if st.button("🔄 Reset All"):
-    for k in st.session_state.counters:
-        st.session_state.counters[k]["value"] = global_reset
-    st.rerun()
+    for i in range(num_counters):
 
-st.divider()
+        st.markdown(f"### Counter {i+1}")
+
+        c1, c2, c3 = st.columns([3, 2, 2])
+
+        with c1:
+            st.session_state.counter_names[i] = st.text_input(
+                "Name",
+                value=st.session_state.counter_names[i],
+                key=f"name_{i}"
+            )
+
+        with c2:
+            st.session_state.counter_colors[i] = st.selectbox(
+                "Color",
+                COLOR_NAMES,
+                index=COLOR_NAMES.index(st.session_state.counter_colors[i])
+                if st.session_state.counter_colors[i] in COLOR_NAMES else 0,
+                key=f"color_{i}"
+            )
+
+        with c3:
+            st.session_state.counter_steps[i] = st.number_input(
+                "Step",
+                min_value=1,
+                max_value=100,
+                value=int(st.session_state.counter_steps[i]),
+                key=f"step_{i}"
+            )
+
+        st.divider()
+
 
 # -------------------------
 # DISPLAY COUNTERS
 # -------------------------
-for name, data in st.session_state.counters.items():
+for i in range(num_counters):
 
-    color = COLOR_MAP.get(data["color"], "#FFFFFF")
-    selected = "⭐" if name == st.session_state.selected else ""
+    name = st.session_state.counter_names[i]
+    color = COLOR_MAP.get(st.session_state.counter_colors[i], "#FFFFFF")
 
     st.markdown(
         f"""
         <div style="
             background:{color};
-            padding:14px;
+            padding:16px;
             border-radius:16px;
+            border:1px solid #ddd;
             margin-bottom:10px;
-            border:3px solid {'black' if selected else '#ddd'};
+            text-align:center;
         ">
-            <h3 style="text-align:center;margin:0;">
-                {selected} {name}
-            </h3>
-            <div style="text-align:center;font-size:42px;font-weight:bold;">
-                {data['value']}
+            <div style="font-size:18px;font-weight:600;">
+                {name}
+            </div>
+
+            <div style="font-size:40px;font-weight:bold;margin-top:6px;">
+                {st.session_state.counter_values[i]}
             </div>
         </div>
         """,
         unsafe_allow_html=True
+    )
+
+    st.session_state.counter_values[i] = st.number_input(
+        "",
+        value=st.session_state.counter_values[i],
+        step=st.session_state.counter_steps[i],
+        key=f"value_{i}"
     )
