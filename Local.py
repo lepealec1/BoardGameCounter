@@ -1,8 +1,14 @@
 import streamlit as st
+from streamlit_autorefresh import st_autorefresh
 
 st.set_page_config(page_title="Board Game Counter", layout="centered")
 
 st.title("🎲 Counter App")
+
+# -------------------------
+# AUTO REFRESH (EVERY 1 SECOND)
+# -------------------------
+st_autorefresh(interval=1000, key="refresh")
 
 # -------------------------
 # COLORS
@@ -59,7 +65,7 @@ st.session_state.counter_steps = resize(st.session_state.counter_steps, 1)
 
 
 # -------------------------
-# CUSTOMIZE COUNTERS (MATRIX)
+# CUSTOMIZE COUNTERS
 # -------------------------
 with st.expander("✏️ Customize Counters"):
 
@@ -100,16 +106,6 @@ with st.expander("✏️ Customize Counters"):
 # -------------------------
 # DISPLAY COUNTERS
 # -------------------------
-st.markdown("""
-<style>
-div.stButton > button {
-    font-size: 28px !important;
-    height: 700px !important;
-    width: 700px !important;
-    border-radius: 14px !important;
-}
-</style>
-""", unsafe_allow_html=True)
 for i in range(num_counters):
 
     name = st.session_state.counter_names[i]
