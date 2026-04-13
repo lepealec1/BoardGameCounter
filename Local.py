@@ -33,11 +33,13 @@ if "counters" not in st.session_state:
     st.session_state.counters = {}
 
 if len(st.session_state.counters) != num_counters:
+    default_colors = ["Blue", "Red", "Green", "Yellow"]
+
     st.session_state.counters = {
         f"Counter {i+1}": {
             "value": 0,
             "reset": 0,
-            "color": ["Blue", "Red", "Green", "Yellow"][i] if i < 4 else "White"
+            "color": default_colors[i] if i < 4 else "White"
         }
         for i in range(num_counters)
     }
@@ -59,7 +61,7 @@ with col2:
 st.divider()
 
 # -------------------------
-# STYLES (iOS SAFE)
+# CARD STYLE
 # -------------------------
 st.markdown("""
 <style>
@@ -81,19 +83,12 @@ st.markdown("""
     font-weight: bold;
 }
 
-/* iOS-safe flex button row */
-.btn-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 18px;
-}
-
-.btn-row button {
-    flex: 1;
+/* FORCE BUTTONS TO BE TOUCH FRIENDLY */
+div.stButton > button {
     height: 44px !important;
     font-size: 16px !important;
     border-radius: 10px !important;
+    width: 100% !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -116,19 +111,22 @@ for name, data in st.session_state.counters.items():
         unsafe_allow_html=True
     )
 
-    # BUTTON ROW
-    st.markdown('<div class="btn-row">', unsafe_allow_html=True)
+    # -------------------------
+    # iOS-STABLE 3 BUTTON ROW
+    # -------------------------
+    c1, c2, c3 = st.columns(3, gap="small")
 
-    if st.button("➖", key=f"dec_{name}"):
-        st.session_state.counters[name]["value"] -= step
-        st.rerun()
+    with c1:
+        if st.button("➖", key=f"dec_{name}"):
+            st.session_state.counters[name]["value"] -= step
+            st.rerun()
 
-    if st.button(f"{data['reset']}", key=f"reset_{name}"):
-        st.session_state.counters[name]["value"] = data["reset"]
-        st.rerun()
+    with c2:
+        if st.button(f"{data['reset']}", key=f"reset_{name}"):
+            st.session_state.counters[name]["value"] = data["reset"]
+            st.rerun()
 
-    if st.button("➕", key=f"inc_{name}"):
-        st.session_state.counters[name]["value"] += step
-        st.rerun()
-
-    st.markdown('</div>', unsafe_allow_html=True)
+    with c3:
+        if st.button("➕", key=f"inc_{name}"):
+            st.session_state.counters[name]["value"] += step
+            st.rerun()
