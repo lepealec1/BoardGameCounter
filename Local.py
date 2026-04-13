@@ -1,11 +1,11 @@
 import streamlit as st
 
-st.set_page_config(page_title="Board Game Counter", layout="centered")
+st.set_page_config(page_title="Game Counter", layout="centered")
 
-st.title("🎲 Mobile Counter")
+st.title("🎲 Game Mode Counter")
 
 # -------------------------
-# COLOR SYSTEM
+# COLORS
 # -------------------------
 COLOR_MAP = {
     "Blue": "#BBDEFB",
@@ -20,119 +20,112 @@ COLOR_MAP = {
     "White": "#FFFFFF",
 }
 
-COLOR_NAMES = list(COLOR_MAP.keys())
-
 # -------------------------
 # INIT
 # -------------------------
 num_counters = int(st.number_input("Number of counters", 1, 50, 4))
+step = st.number_input("Step size", 1, 10, 1)
 
 if "counters" not in st.session_state:
     st.session_state.counters = {}
 
 if len(st.session_state.counters) != num_counters:
-    new_state = {}
-
-    for i in range(num_counters):
-        name = f"Counter {i+1}" if i >= 4 else f"Counter {i+1}"
-        color = ["Blue", "Red", "Green", "Yellow"][i] if i < 4 else "White"
-
-        new_state[name] = {
+    st.session_state.counters = {
+        f"Counter {i+1}": {
             "value": 0,
             "reset": 0,
-            "color": color
+            "color": ["Blue", "Red", "Green", "Yellow"][i] if i < 4 else "White"
         }
-
-    st.session_state.counters = new_state
+        for i in range(num_counters)
+    }
 
 # -------------------------
 # GLOBAL CONTROLS
 # -------------------------
-col1, col2 = st.columns(2)
-
-with col1:
-    step = st.number_input("Step", 1, 10, 1)
-
-with col2:
-    global_reset = st.number_input("Global reset value", 0, 100, 0)
-
 c1, c2 = st.columns(2)
 
 with c1:
-    if st.button("🔄 Global Reset"):
-        for k in st.session_state.counters:
-            st.session_state.counters[k]["value"] = global_reset
-        st.rerun()
+    global_reset = st.number_input("Global reset", 0, 100, 0)
 
 with c2:
-    if st.button("🎯 Reset All"):
+    if st.button("🔄 Reset All"):
         for k in st.session_state.counters:
-            st.session_state.counters[k]["value"] = st.session_state.counters[k]["reset"]
+            st.session_state.counters[k]["value"] = global_reset
         st.rerun()
 
 st.divider()
 
 # -------------------------
-# STYLES (MOBILE CARD UI)
+# MOBILE STYLES
 # -------------------------
 st.markdown("""
 <style>
-.counter-card {
+.card {
     padding: 18px;
     border-radius: 18px;
     margin-bottom: 14px;
-    border: 1px solid #ddd;
     text-align: center;
-    cursor: pointer;
-    user-select: none;
+    border: 1px solid #ddd;
 }
 
-.counter-title {
+.title {
     font-size: 18px;
-    margin-bottom: 6px;
     font-weight: 600;
 }
 
-.counter-value {
-    font-size: 44px;
+.value {
+    font-size: 48px;
     font-weight: bold;
+    margin: 6px 0;
 }
 
-.reset-btn button {
-    width: 100%;
-    margin-top: 6px;
-    border-radius: 12px;
+/* BIG TOUCH BUTTONS */
+button {
+    height: 48px !important;
+    font-size: 16px !important;
+    border-radius: 12px !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# RENDER COUNTERS (MOBILE STYLE)
+# RENDER COUNTERS
 # -------------------------
 for name, data in st.session_state.counters.items():
 
     color = COLOR_MAP.get(data["color"], "#FFFFFF")
 
-    # CARD (CLICK AREA = +1)
-    if st.button(
-        f"{name} | {data['value']}",
-        key=f"tap_{name}"
-    ):
-        st.session_state.counters[name]["value"] += step
-        st.rerun()
-
     # VISUAL CARD
     st.markdown(
         f"""
-        <div class="counter-card" style="background:{color}">
-            <div class="counter-title">{name}</div>
-            <div class="counter-value">{data['value']}</div>
+        <div class="card" style="background:{color}">
+            <div class="title">{name}</div>
+            <div class="value">{data['value']}</div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # RESET BUTTON (fallback instead of long-press)
-    if st.button(f"Reset to {data['reset']}", key=f"reset_{name}"):
-        st.session_state.counters[name]["value"] = data["reset"]
-        st.rerun()
+    # -------------------------
+    # GAME ACTIONS
+    # -------------------------
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+
+    # ➖ subtract
+    with col1:
+        if st.button("➖", key=f"minus_{name}"):
+            st.session_state.counters[name]["value"] -= step
+            st.rerun()
+
+    # 🔄 reset
+    with col2:
+        if st.button(f"Reset ({data['reset']})", key=f"reset_{name}"):
+            st.session_state.counters[name]["value"] = data["reset"]
+            st.rerun()
+
+    # ➕ add
+    with col3:
+        if st.button("➕", key=f"plus_{name}"):
+            st.session_state.counters[name]["value"] += step
+            st.rerun()
