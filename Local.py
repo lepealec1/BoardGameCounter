@@ -1,5 +1,7 @@
 import streamlit as st
 
+st.set_page_config(page_title="Board Game Counter", layout="centered")
+
 st.markdown("""
 <style>
 
@@ -9,19 +11,12 @@ div[data-testid="stNumberInput"] {
     margin-bottom: 14px;
 }
 
-/* input field (middle box) */
+/* input field */
 div[data-testid="stNumberInput"] input {
     font-size: 30px !important;
     height: 35px !important;
-#    color: black;
     text-align: center;
 }
-
-            
-#div[data-testid="stNumberInput"] input {
- #   background-color: #white;
-#    color: white;
-#}
 
 /* + / - buttons */
 div[data-testid="stNumberInput"] button {
@@ -31,18 +26,13 @@ div[data-testid="stNumberInput"] button {
     border-radius: 14px !important;
 }
 
-/* make layout feel less cramped */
+/* layout */
 div[data-testid="stNumberInput"] > div {
     align-items: stretch;
 }
 
 </style>
 """, unsafe_allow_html=True)
-
-
-
-st.set_page_config(page_title="Board Game Counter", layout="centered")
-
 
 st.title("🎲 Counter App")
 
@@ -98,8 +88,13 @@ def resize(lst, default):
 
 st.session_state.counter_values = resize(st.session_state.counter_values, 20)
 st.session_state.counter_names = resize(st.session_state.counter_names, "Counter")
-st.session_state.counter_colors = resize(st.session_state.counter_colors, "White")
+st.session_state.counter_colors = resize(st.session_state.counter_colors, "Blue")
 st.session_state.counter_steps = resize(st.session_state.counter_steps, 1)
+
+# ensure preset = 20 fallback
+st.session_state.counter_values = [
+    v if v is not None else 20 for v in st.session_state.counter_values
+]
 
 # -------------------------
 # CUSTOMIZE
@@ -130,18 +125,21 @@ with st.expander("✏️ Customize Counters"):
         )
 
 # -------------------------
-# DISPLAY (FIXED SYNC)
+# DISPLAY
 # -------------------------
 for i in range(num_counters):
-    # ✅ number_input owns state
+
+    # ✅ counter input (NOW PRESET TO 20)
     st.number_input(
         "",
         key=f"value_{i}",
+        value=st.session_state.counter_values[i],  # IMPORTANT FIX
         step=st.session_state.counter_steps[i]
     )
 
-    # ✅ sync AFTER widget
+    # sync state
     st.session_state.counter_values[i] = st.session_state[f"value_{i}"]
+
     name = st.session_state.counter_names[i]
     value = st.session_state.counter_values[i]
     color = COLOR_MAP.get(st.session_state.counter_colors[i], "#FFFFFF")
@@ -164,5 +162,3 @@ for i in range(num_counters):
         """,
         unsafe_allow_html=True
     )
-
-    
