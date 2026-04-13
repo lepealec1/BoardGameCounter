@@ -1,6 +1,6 @@
 import streamlit as st
 
-st.set_page_config(page_title="Board Game Counter", layout="centered")
+st.set_page_config(page_title="Counter Game", layout="centered")
 
 st.title("🎮 Counter App")
 
@@ -27,7 +27,7 @@ num_counters = st.number_input("Number of counters", 1, 20, 4)
 step = st.number_input("Step", 1, 10, 1)
 
 # -------------------------
-# STATE
+# INIT
 # -------------------------
 if "counters" not in st.session_state:
     st.session_state.counters = {}
@@ -45,12 +45,12 @@ if len(st.session_state.counters) != num_counters:
     }
 
 # -------------------------
-# RESET
+# GLOBAL RESET
 # -------------------------
 col1, col2 = st.columns(2)
 
 with col1:
-    global_reset = st.number_input("Global reset", 0, 100, 0)
+    global_reset = st.number_input("Global reset value", 0, 100, 0)
 
 with col2:
     if st.button("🔄 Reset All"):
@@ -61,57 +61,48 @@ with col2:
 st.divider()
 
 # -------------------------
-# STYLE
+# STYLES (ONLY FOR VISUAL)
 # -------------------------
 st.markdown("""
 <style>
-.card {
-    padding: 14px;
-    border-radius: 16px;
-    margin-bottom: 14px;
+.big {
+    font-size: 40px;
+    font-weight: bold;
     text-align: center;
-    border: 1px solid #ddd;
 }
 
 .title {
     font-size: 18px;
     font-weight: 600;
-}
-
-.value {
-    font-size: 44px;
-    font-weight: bold;
-}
-
-/* buttons fill width nicely inside card */
-div.stButton > button {
-    width: 100% !important;
-    height: 42px !important;
-    font-size: 16px !important;
-    border-radius: 10px !important;
+    text-align: center;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# RENDER
+# TRUE STREAMLIT CARDS
 # -------------------------
 for name, data in st.session_state.counters.items():
 
     color = COLOR_MAP.get(data["color"], "#FFFFFF")
 
-    # CARD WRAPPER
     st.markdown(
         f"""
-        <div class="card" style="background:{color}">
+        <div style="
+            background:{color};
+            padding:16px;
+            border-radius:16px;
+            border:1px solid #ddd;
+            text-align:center;
+        ">
             <div class="title">{name}</div>
-            <div class="value">{data['value']}</div>
+            <div class="big">{data['value']}</div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-    # BUTTONS INSIDE CARD AREA (visually grouped)
+    # THIS IS NOW ACTUALLY INSIDE THE FLOW (NOT HTML)
     c1, c2, c3 = st.columns(3, gap="small")
 
     with c1:
