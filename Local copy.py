@@ -62,8 +62,8 @@ if len(st.session_state.counters) != num_counters:
             color = "White"
 
         new_state[name] = {
-            "value": 0,
-            "reset": 0,
+            "value": 20,
+            "reset": 20,
             "color": color
         }
 
@@ -138,7 +138,7 @@ with col3:
         st.rerun()
 
 with col4:
-    if st.button("🎯 Reset All (Custom)"):
+    if st.button("🎯 Reset All to Local Resets"):
         for k in st.session_state.counters:
             st.session_state.counters[k]["value"] = st.session_state.counters[k]["reset"]
         st.rerun()
@@ -191,7 +191,7 @@ for name, data in st.session_state.counters.items():
         unsafe_allow_html=True
     )
 
-    c1, c2, c3 = st.columns([1, 2, 1])
+    c1, c2, c3 = st.columns([1, 2, 1],gap="xxsmall",vertical_alignment="center")
 
     with c1:
         if st.button("➖", key=f"dec_{name}"):
@@ -199,7 +199,7 @@ for name, data in st.session_state.counters.items():
             st.rerun()
 
     with c2:
-        if st.button(f"Reset to {reset_val}", key=f"reset_{name}"):
+        if st.button(f"{reset_val}", key=f"reset_{name}"):
             st.session_state.counters[name]["value"] = reset_val
             st.rerun()
 
