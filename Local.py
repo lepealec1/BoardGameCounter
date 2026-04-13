@@ -166,7 +166,7 @@ with col4:
 st.divider()
 
 # -------------------------
-# STYLES
+# STYLES (MOBILE SAFE BUTTON CENTERING)
 # -------------------------
 st.markdown("""
 <style>
@@ -184,10 +184,19 @@ st.markdown("""
     margin: 8px 0;
 }
 
+/* Make buttons consistent */
 div.stButton > button {
-    height: 45px;
+    height: 42px;
     font-size: 14px;
     border-radius: 10px;
+}
+
+/* FLEX CENTER FIX (iOS SAFE) */
+.btn-row {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 6px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -196,7 +205,6 @@ div.stButton > button {
 # GRID RENDER
 # -------------------------
 items = list(st.session_state.counters.items())
-
 index = 0
 
 for r in range(rows):
@@ -226,25 +234,26 @@ for r in range(rows):
                 unsafe_allow_html=True
             )
 
-            # CENTERED BUTTON ROW
-            c1, c2, c3 = st.columns([1, 2, 1])
+            # CENTERED BUTTON ROW (iOS FIXED)
+            st.markdown("<div class='btn-row'>", unsafe_allow_html=True)
 
-            with c2:
-                b1, b2, b3 = st.columns([1, 2, 1])
+            b1, b2, b3 = st.columns(3)
 
-                with b1:
-                    if st.button("➖", key=f"dec_{name}"):
-                        st.session_state.counters[name]["value"] -= step
-                        st.rerun()
+            with b1:
+                if st.button("➖", key=f"dec_{name}"):
+                    st.session_state.counters[name]["value"] -= step
+                    st.rerun()
 
-                with b2:
-                    if st.button(f"Reset to: {reset_val}", key=f"reset_{name}"):
-                        st.session_state.counters[name]["value"] = reset_val
-                        st.rerun()
+            with b2:
+                if st.button(f"Reset: {reset_val}", key=f"reset_{name}"):
+                    st.session_state.counters[name]["value"] = reset_val
+                    st.rerun()
 
-                with b3:
-                    if st.button("➕", key=f"inc_{name}"):
-                        st.session_state.counters[name]["value"] += step
-                        st.rerun()
+            with b3:
+                if st.button("➕", key=f"inc_{name}"):
+                    st.session_state.counters[name]["value"] += step
+                    st.rerun()
+
+            st.markdown("</div>", unsafe_allow_html=True)
 
         index += 1
