@@ -104,8 +104,8 @@ st.markdown("""
 <style>
 div.stButton > button {
     font-size: 28px !important;
-    height: 70px !important;
-    width: 70px !important;
+    height: 700px !important;
+    width: 700px !important;
     border-radius: 14px !important;
 }
 </style>
