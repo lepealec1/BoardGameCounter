@@ -177,6 +177,7 @@ div.stButton > button {
 for name, data in st.session_state.counters.items():
 
     value = data["value"]
+    reset_val = data["reset"]
     color_hex = COLOR_MAP.get(data["color"], "#FFFFFF")
 
     st.markdown(
@@ -197,8 +198,8 @@ for name, data in st.session_state.counters.items():
             st.rerun()
 
     with c2:
-        if st.button("Reset", key=f"reset_{name}"):
-            st.session_state.counters[name]["value"] = st.session_state.counters[name]["reset"]
+        if st.button(f"Reset to {reset_val}", key=f"reset_{name}"):
+            st.session_state.counters[name]["value"] = reset_val
             st.rerun()
 
     with c3:
