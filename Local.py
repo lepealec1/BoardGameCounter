@@ -79,6 +79,12 @@ st.markdown("""
     margin-bottom:10px;
 }
 
+div.stButton > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    white-space: nowrap !important;
+    overflow: hidden;
+}
 </style>
 """, unsafe_allow_html=True)
 
