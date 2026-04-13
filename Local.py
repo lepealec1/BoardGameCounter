@@ -1,11 +1,11 @@
 import streamlit as st
 
-st.set_page_config(page_title="Board Game Counter", layout="centered")
+st.set_page_config(page_title="Game Controller", layout="centered")
 
-st.title("🎲 Counter Matrix")
+st.title("🎮 Game Controller")
 
 # -------------------------
-# COLOR SYSTEM
+# COLORS
 # -------------------------
 COLOR_MAP = {
     "Blue": "#BBDEFB",
@@ -20,14 +20,15 @@ COLOR_MAP = {
     "White": "#FFFFFF",
 }
 
-COLOR_NAMES = list(COLOR_MAP.keys())
-
 # -------------------------
-# INIT COUNTERS
+# SETTINGS
 # -------------------------
-num_counters = int(st.number_input("Number of counters", 1, 20, 4))
+num_counters = st.number_input("Number of counters", 1, 20, 4)
 step = st.number_input("Step", 1, 10, 1)
 
+# -------------------------
+# INIT STATE
+# -------------------------
 if "counters" not in st.session_state:
     st.session_state.counters = {}
 
@@ -47,62 +48,79 @@ if len(st.session_state.counters) != num_counters:
 col1, col2 = st.columns(2)
 
 with col1:
-    global_reset_value = st.number_input("Global reset value", 0, 100, 0)
+    global_reset = st.number_input("Global reset value", 0, 100, 0)
 
 with col2:
     if st.button("🔄 Reset All"):
         for k in st.session_state.counters:
-            st.session_state.counters[k]["value"] = global_reset_value
+            st.session_state.counters[k]["value"] = global_reset
         st.rerun()
 
 st.divider()
 
 # -------------------------
-# DISPLAY CARDS ONLY (NO BUTTONS)
+# STYLES (clean card UI)
+# -------------------------
+st.markdown("""
+<style>
+.card {
+    padding: 14px;
+    border-radius: 14px;
+    margin-bottom: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.title {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.value {
+    font-size: 42px;
+    font-weight: bold;
+}
+
+div.stButton > button {
+    height: 44px;
+    font-size: 16px;
+    border-radius: 10px;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# -------------------------
+# GAME BOARD (ROW CONTROLS)
 # -------------------------
 for name, data in st.session_state.counters.items():
 
     color = COLOR_MAP.get(data["color"], "#FFFFFF")
 
+    # CARD DISPLAY
     st.markdown(
         f"""
-        <div style="
-            background:{color};
-            padding:16px;
-            border-radius:16px;
-            margin-bottom:10px;
-            text-align:center;
-            border:1px solid #ddd;
-        ">
-            <div style="font-size:18px;font-weight:600;">{name}</div>
-            <div style="font-size:46px;font-weight:bold;">{data['value']}</div>
+        <div class="card" style="background:{color}">
+            <div class="title">{name}</div>
+            <div class="value">{data['value']}</div>
         </div>
         """,
         unsafe_allow_html=True
     )
 
-# -------------------------
-# MATRIX CONTROLS
-# -------------------------
-st.subheader("Controls Matrix")
+    # CONTROL ROW (THIS IS THE KEY PART)
+    c1, c2, c3 = st.columns(3)
 
-names = list(st.session_state.counters.keys())
-
-for name in names:
-
-    col1, col2, col3 = st.columns([1, 2, 1])
-
-    with col1:
+    with c1:
         if st.button("➖", key=f"dec_{name}"):
             st.session_state.counters[name]["value"] -= step
             st.rerun()
 
-    with col2:
-        if st.button(f"Reset ({st.session_state.counters[name]['reset']})", key=f"reset_{name}"):
-            st.session_state.counters[name]["value"] = st.session_state.counters[name]["reset"]
+    with c2:
+        if st.button(f"Reset ({data['reset']})", key=f"reset_{name}"):
+            st.session_state.counters[name]["value"] = data["reset"]
             st.rerun()
 
-    with col3:
+    with c3:
         if st.button("➕", key=f"inc_{name}"):
             st.session_state.counters[name]["value"] += step
             st.rerun()
