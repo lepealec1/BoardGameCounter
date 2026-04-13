@@ -63,7 +63,7 @@ if len(st.session_state.counters) != num_counters:
 
         new_state[name] = {
             "value": 20,
-            "reset": 0,
+            "reset": 20,
             "color": color
         }
 
