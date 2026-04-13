@@ -3,7 +3,7 @@ from streamlit_autorefresh import st_autorefresh
 
 st.set_page_config(page_title="Board Game Counter", layout="centered")
 
-st.title("🎲 Game Counter (Hold Mode)")
+st.title("🎲 Game Counter (Fixed + Hold Mode)")
 
 # -------------------------
 # SETTINGS
@@ -11,38 +11,44 @@ st.title("🎲 Game Counter (Hold Mode)")
 num_counters = int(st.number_input("Number of counters", 1, 10, 4))
 
 # -------------------------
-# STATE INIT
+# SAFE STATE INIT
 # -------------------------
-if "values" not in st.session_state:
-    st.session_state.values = [20] * num_counters
+if "counter_values" not in st.session_state:
+    st.session_state.counter_values = [20] * num_counters
 
-if "hold" not in st.session_state:
-    st.session_state.hold = [None] * num_counters  # ("up", "down", None)
+if "counter_hold" not in st.session_state:
+    st.session_state.counter_hold = [None] * num_counters  # "up", "down", None
+
 
 # -------------------------
-# RESIZE SAFE
+# RESIZE SAFE FUNCTION
 # -------------------------
 def resize(lst, default):
+    if not isinstance(lst, list):
+        lst = [default]
+
     lst = list(lst)
+
     if len(lst) < num_counters:
         lst += [default] * (num_counters - len(lst))
+
     return lst[:num_counters]
 
-st.session_state.values = resize(st.session_state.values, 20)
-st.session_state.hold = resize(st.session_state.hold, None)
+
+st.session_state.counter_values = resize(st.session_state.counter_values, 20)
+st.session_state.counter_hold = resize(st.session_state.counter_hold, None)
 
 # -------------------------
-# AUTO REFRESH (for hold mode)
+# AUTO REFRESH (only when holding)
 # -------------------------
-if any(h is not None for h in st.session_state.hold):
+if any(h is not None for h in st.session_state.counter_hold):
     st_autorefresh(interval=120, key="hold_refresh")
 
-    # apply hold actions
     for i in range(num_counters):
-        if st.session_state.hold[i] == "up":
-            st.session_state.values[i] += 1
-        elif st.session_state.hold[i] == "down":
-            st.session_state.values[i] -= 1
+        if st.session_state.counter_hold[i] == "up":
+            st.session_state.counter_values[i] += 1
+        elif st.session_state.counter_hold[i] == "down":
+            st.session_state.counter_values[i] -= 1
 
 # -------------------------
 # UI
@@ -56,29 +62,31 @@ for i in range(num_counters):
     # ➖ single click
     with col1:
         if st.button("➖", key=f"dec_{i}"):
-            st.session_state.values[i] -= 1
+            st.session_state.counter_values[i] -= 1
 
-    # value display
+    # display
     with col2:
         st.markdown(
-            f"<div style='text-align:center;font-size:28px;font-weight:bold'>{st.session_state.values[i]}</div>",
+            f"<div style='text-align:center;font-size:28px;font-weight:bold'>"
+            f"{st.session_state.counter_values[i]}</div>",
             unsafe_allow_html=True
         )
 
     # ➕ single click
     with col3:
         if st.button("➕", key=f"inc_{i}"):
-            st.session_state.values[i] += 1
+            st.session_state.counter_values[i] += 1
 
     # HOLD controls
     with col4:
-        if st.session_state.hold[i] is None:
-            if st.button("⏱", key=f"hold_up_{i}"):
-                st.session_state.hold[i] = "up"
+        if st.session_state.counter_hold[i] is None:
+            if st.button("⏱+", key=f"hold_up_{i}"):
+                st.session_state.counter_hold[i] = "up"
+
             if st.button("⏱-", key=f"hold_down_{i}"):
-                st.session_state.hold[i] = "down"
+                st.session_state.counter_hold[i] = "down"
         else:
             if st.button("⛔", key=f"stop_{i}"):
-                st.session_state.hold[i] = None
+                st.session_state.counter_hold[i] = None
 
     st.divider()
