@@ -1,37 +1,11 @@
 import streamlit as st
-st.markdown("""
-<style>
 
-/* Make number input container taller */
-div[data-testid="stNumberInput"] {
-    height: 70px;
-}
-
-/* Increase input text size */
-div[data-testid="stNumberInput"] input {
-    font-size: 28px !important;
-    text-align: center;
-}
-
-/* Make + / - buttons BIGGER */
-div[data-testid="stNumberInput"] button {
-    font-size: 26px !important;
-    width: 70px !important;
-    height: 70px !important;
-    border-radius: 12px !important;
-}
-
-/* Improve spacing */
-div[data-testid="stNumberInput"] {
-    margin-bottom: 10px;
-}
-
-</style>
-""", unsafe_allow_html=True)
 st.set_page_config(page_title="Board Game Counter", layout="centered")
 
 st.title("🎲 Counter App")
+from streamlit_autorefresh import st_autorefresh
 
+st_autorefresh(interval=100, key="refresh")  # 1000ms = 1 second
 # -------------------------
 # COLORS
 # -------------------------
@@ -87,51 +61,56 @@ st.session_state.counter_names = resize(st.session_state.counter_names, "Counter
 st.session_state.counter_colors = resize(st.session_state.counter_colors, "White")
 st.session_state.counter_steps = resize(st.session_state.counter_steps, 1)
 
+
 # -------------------------
-# CUSTOMIZE
+# CUSTOMIZE (MATRIX: 1 ROW PER COUNTER)
 # -------------------------
 with st.expander("✏️ Customize Counters"):
+
     for i in range(num_counters):
 
-        st.session_state.counter_names[i] = st.text_input(
-            "Name",
-            value=st.session_state.counter_names[i],
-            key=f"name_{i}"
-        )
+        st.markdown(f"### Counter {i+1}")
 
-        st.session_state.counter_colors[i] = st.selectbox(
-            "Color",
-            COLOR_NAMES,
-            index=COLOR_NAMES.index(st.session_state.counter_colors[i])
-            if st.session_state.counter_colors[i] in COLOR_NAMES else 0,
-            key=f"color_{i}"
-        )
+        c1, c2, c3 = st.columns([3, 2, 2])
 
-        st.session_state.counter_steps[i] = st.number_input(
-            "Step",
-            min_value=1,
-            max_value=100,
-            value=int(st.session_state.counter_steps[i]),
-            key=f"step_{i}"
-        )
+        with c1:
+            st.session_state.counter_names[i] = st.text_input(
+                "Name",
+                value=st.session_state.counter_names[i],
+                key=f"name_{i}"
+            )
+
+        with c2:
+            st.session_state.counter_colors[i] = st.selectbox(
+                "Color",
+                COLOR_NAMES,
+                index=COLOR_NAMES.index(st.session_state.counter_colors[i])
+                if st.session_state.counter_colors[i] in COLOR_NAMES else 0,
+                key=f"color_{i}"
+            )
+
+        with c3:
+            st.session_state.counter_steps[i] = st.number_input(
+                "Step",
+                min_value=1,
+                max_value=100,
+                value=int(st.session_state.counter_steps[i]),
+                key=f"step_{i}"
+            )
+
+        st.divider()
+
 
 # -------------------------
-# DISPLAY (FIXED SYNC)
+# DISPLAY COUNTERS (NAME + VALUE)
 # -------------------------
 for i in range(num_counters):
-    # ✅ number_input owns state
-    st.number_input(
-        "",
-        key=f"value_{i}",
-        step=st.session_state.counter_steps[i]
-    )
 
-    # ✅ sync AFTER widget
-    st.session_state.counter_values[i] = st.session_state[f"value_{i}"]
     name = st.session_state.counter_names[i]
     value = st.session_state.counter_values[i]
     color = COLOR_MAP.get(st.session_state.counter_colors[i], "#FFFFFF")
 
+    # CARD
     st.markdown(
         f"""
         <div style="
@@ -151,4 +130,10 @@ for i in range(num_counters):
         unsafe_allow_html=True
     )
 
-    
+    # INPUT (ONLY SOURCE OF TRUTH)
+    st.session_state.counter_values[i] = st.number_input(
+        "",
+        value=value,
+        step=st.session_state.counter_steps[i],
+        key=f"value_{i}"
+    )
