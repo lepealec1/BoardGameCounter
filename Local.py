@@ -1,4 +1,3 @@
-
 import streamlit as st
 
 st.set_page_config(page_title="Counter Game", layout="centered")
@@ -62,10 +61,26 @@ with col2:
 st.divider()
 
 # -------------------------
-# STYLE (REAL CARD LOOK)
+# FIX: iOS COLUMN + BUTTON STABILITY
 # -------------------------
 st.markdown("""
 <style>
+/* IMPORTANT: prevents iOS column wrapping */
+[data-testid="column"] {
+    min-width: 0 !important;
+}
+
+/* buttons must not force layout expansion */
+div.stButton > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 0.25rem !important;
+    font-size: 14px !important;
+    white-space: nowrap !important;
+    overflow: hidden;
+}
+
+/* card styling */
 .card-title {
     text-align:center;
     font-size:18px;
@@ -78,24 +93,16 @@ st.markdown("""
     font-weight:bold;
     margin-bottom:10px;
 }
-
-div.stButton > button {
-    width: 100% !important;
-    min-width: 0 !important;
-    white-space: nowrap !important;
-    overflow: hidden;
-}
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# RENDER CARDS
+# RENDER
 # -------------------------
 for name, data in st.session_state.counters.items():
 
     color = COLOR_MAP.get(data["color"], "#FFFFFF")
 
-    # CARD CONTAINER (REAL STREAMLIT BLOCK)
     with st.container():
 
         st.markdown(
@@ -114,8 +121,8 @@ for name, data in st.session_state.counters.items():
             unsafe_allow_html=True
         )
 
-        # BUTTON ROW (TRUE STREAMLIT LAYOUT)
-        c1, c2, c3 = st.columns(3, gap="small", vertical_alignment="center")
+        # 🔥 FIXED COLUMN RATIOS (THIS IS KEY FOR IOS)
+        c1, c2, c3 = st.columns([0.9, 1.6, 0.9], gap="small")
 
         with c1:
             if st.button("➖", key=f"dec_{name}"):
