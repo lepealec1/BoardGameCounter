@@ -100,6 +100,16 @@ with st.expander("✏️ Customize Counters"):
 # -------------------------
 # DISPLAY COUNTERS
 # -------------------------
+st.markdown("""
+<style>
+div.stButton > button {
+    font-size: 28px !important;
+    height: 70px !important;
+    width: 70px !important;
+    border-radius: 14px !important;
+}
+</style>
+""", unsafe_allow_html=True)
 for i in range(num_counters):
 
     name = st.session_state.counter_names[i]
@@ -116,7 +126,7 @@ for i in range(num_counters):
             text-align:center;
         ">
             <div style="font-size:18px;font-weight:600;">
-                {name}: \n
+                {name}: <br>
                 {st.session_state.counter_values[i]}
             </div>
         </div>
