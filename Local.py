@@ -170,8 +170,22 @@ st.divider()
 # -------------------------
 st.markdown("""
 <style>
+.counter-card {
+    padding: 14px;
+    border-radius: 16px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+}
+
+.big-number {
+    font-size: 40px;
+    text-align: center;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
 div.stButton > button {
-    height: 40px;
+    height: 45px;
     font-size: 16px;
     border-radius: 10px;
 }
@@ -179,9 +193,10 @@ div.stButton > button {
 """, unsafe_allow_html=True)
 
 # -------------------------
-# GRID RENDER (FIXED CARD LAYOUT)
+# GRID RENDER (BUTTONS INSIDE CARD)
 # -------------------------
 items = list(st.session_state.counters.items())
+
 index = 0
 
 for r in range(rows):
@@ -199,29 +214,17 @@ for r in range(rows):
 
         with cols_ui[c]:
 
-            # CARD (visual container)
             st.markdown(
                 f"""
-                <div style="
-                    background-color:{color_hex};
-                    padding:16px;
-                    border-radius:16px;
-                    border:1px solid #ddd;
-                    text-align:center;
-                ">
-                    <div style="font-weight:bold; font-size:16px;">
-                        {name}
-                    </div>
-
-                    <div style="font-size:42px; font-weight:bold; margin:8px 0;">
-                        {value}
-                    </div>
+                <div class="counter-card" style="background-color:{color_hex};">
+                    <h4 style="text-align:center; margin:0;">{name}</h4>
+                    <div class="big-number">{value}</div>
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-            # BUTTONS (visually attached under card)
+            # BUTTONS INSIDE CARD
             b1, b2, b3 = st.columns([1, 1, 1])
 
             with b1:
