@@ -27,30 +27,30 @@ num_counters = st.number_input("Number of counters", 1, 20, 4)
 step = st.number_input("Step", 1, 10, 1)
 
 # -------------------------
-# INIT STATE
+# STATE
 # -------------------------
 if "counters" not in st.session_state:
     st.session_state.counters = {}
 
 if len(st.session_state.counters) != num_counters:
-    default_colors = ["Blue", "Red", "Green", "Yellow"]
+    colors = ["Blue", "Red", "Green", "Yellow"]
 
     st.session_state.counters = {
         f"Counter {i+1}": {
             "value": 0,
             "reset": 0,
-            "color": default_colors[i] if i < 4 else "White"
+            "color": colors[i] if i < 4 else "White"
         }
         for i in range(num_counters)
     }
 
 # -------------------------
-# GLOBAL RESET
+# RESET
 # -------------------------
 col1, col2 = st.columns(2)
 
 with col1:
-    global_reset = st.number_input("Global reset value", 0, 100, 0)
+    global_reset = st.number_input("Global reset", 0, 100, 0)
 
 with col2:
     if st.button("🔄 Reset All"):
@@ -61,14 +61,14 @@ with col2:
 st.divider()
 
 # -------------------------
-# CARD STYLE
+# STYLE
 # -------------------------
 st.markdown("""
 <style>
 .card {
     padding: 14px;
-    border-radius: 14px;
-    margin-bottom: 10px;
+    border-radius: 16px;
+    margin-bottom: 14px;
     text-align: center;
     border: 1px solid #ddd;
 }
@@ -83,24 +83,24 @@ st.markdown("""
     font-weight: bold;
 }
 
-/* FORCE BUTTONS TO BE TOUCH FRIENDLY */
+/* buttons fill width nicely inside card */
 div.stButton > button {
-    height: 44px !important;
+    width: 100% !important;
+    height: 42px !important;
     font-size: 16px !important;
     border-radius: 10px !important;
-    width: 100% !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# RENDER COUNTERS
+# RENDER
 # -------------------------
 for name, data in st.session_state.counters.items():
 
     color = COLOR_MAP.get(data["color"], "#FFFFFF")
 
-    # CARD
+    # CARD WRAPPER
     st.markdown(
         f"""
         <div class="card" style="background:{color}">
@@ -111,9 +111,7 @@ for name, data in st.session_state.counters.items():
         unsafe_allow_html=True
     )
 
-    # -------------------------
-    # iOS-STABLE 3 BUTTON ROW
-    # -------------------------
+    # BUTTONS INSIDE CARD AREA (visually grouped)
     c1, c2, c3 = st.columns(3, gap="small")
 
     with c1:
