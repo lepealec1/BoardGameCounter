@@ -116,7 +116,7 @@ for i in range(num_counters):
             text-align:center;
         ">
             <div style="font-size:18px;font-weight:600;">
-                {name}
+                {name}:
                 {st.session_state.counter_values[i]}
             </div>
         </div>
