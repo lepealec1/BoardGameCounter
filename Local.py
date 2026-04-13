@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Game Controller", layout="centered")
 
-st.title("🎮 Game Controller")
+st.title("🎮 Counter App")
 
 # -------------------------
 # COLORS
@@ -21,14 +21,11 @@ COLOR_MAP = {
 }
 
 # -------------------------
-# SETTINGS
+# INIT
 # -------------------------
-num_counters = st.number_input("Number of counters", 1, 20, 4)
+num_counters = st.number_input("Counters", 1, 20, 4)
 step = st.number_input("Step", 1, 10, 1)
 
-# -------------------------
-# INIT STATE
-# -------------------------
 if "counters" not in st.session_state:
     st.session_state.counters = {}
 
@@ -48,7 +45,7 @@ if len(st.session_state.counters) != num_counters:
 col1, col2 = st.columns(2)
 
 with col1:
-    global_reset = st.number_input("Global reset value", 0, 100, 0)
+    global_reset = st.number_input("Global reset", 0, 100, 0)
 
 with col2:
     if st.button("🔄 Reset All"):
@@ -59,7 +56,7 @@ with col2:
 st.divider()
 
 # -------------------------
-# STYLES (clean card UI)
+# MOBILE STYLES
 # -------------------------
 st.markdown("""
 <style>
@@ -77,26 +74,34 @@ st.markdown("""
 }
 
 .value {
-    font-size: 42px;
+    font-size: 44px;
     font-weight: bold;
 }
 
-div.stButton > button {
-    height: 44px;
-    font-size: 16px;
-    border-radius: 10px;
+/* IOS SAFE FLEX BUTTON ROW */
+.btn-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.btn-row button {
+    flex: 1;
+    height: 44px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# GAME BOARD (ROW CONTROLS)
+# RENDER
 # -------------------------
 for name, data in st.session_state.counters.items():
 
-    color = COLOR_MAP.get(data["color"], "#FFFFFF")
+    color = COLOR_MAP.get(data["color"], "#fff")
 
-    # CARD DISPLAY
     st.markdown(
         f"""
         <div class="card" style="background:{color}">
@@ -107,20 +112,21 @@ for name, data in st.session_state.counters.items():
         unsafe_allow_html=True
     )
 
-    # CONTROL ROW (THIS IS THE KEY PART)
-    c1, c2, c3 = st.columns(3)
+    # -------------------------
+    # SAFE BUTTON ROW (NO COLUMNS)
+    # -------------------------
+    st.markdown('<div class="btn-row">', unsafe_allow_html=True)
 
-    with c1:
-        if st.button("➖", key=f"dec_{name}"):
-            st.session_state.counters[name]["value"] -= step
-            st.rerun()
+    if st.button("➖", key=f"dec_{name}"):
+        st.session_state.counters[name]["value"] -= step
+        st.rerun()
 
-    with c2:
-        if st.button(f"Reset ({data['reset']})", key=f"reset_{name}"):
-            st.session_state.counters[name]["value"] = data["reset"]
-            st.rerun()
+    if st.button(f"Reset ({data['reset']})", key=f"reset_{name}"):
+        st.session_state.counters[name]["value"] = data["reset"]
+        st.rerun()
 
-    with c3:
-        if st.button("➕", key=f"inc_{name}"):
-            st.session_state.counters[name]["value"] += step
-            st.rerun()
+    if st.button("➕", key=f"inc_{name}"):
+        st.session_state.counters[name]["value"] += step
+        st.rerun()
+
+    st.markdown('</div>', unsafe_allow_html=True)
