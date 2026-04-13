@@ -186,14 +186,14 @@ st.markdown("""
 
 div.stButton > button {
     height: 45px;
-    font-size: 16px;
+    font-size: 14px;
     border-radius: 10px;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# GRID RENDER (BUTTONS INSIDE CARD)
+# GRID RENDER
 # -------------------------
 items = list(st.session_state.counters.items())
 
@@ -210,10 +210,12 @@ for r in range(rows):
 
         name, data = items[index]
         value = data["value"]
+        reset_val = data["reset"]
         color_hex = COLOR_MAP.get(data["color"], "#FFFFFF")
 
         with cols_ui[c]:
 
+            # CARD
             st.markdown(
                 f"""
                 <div class="counter-card" style="background-color:{color_hex};">
@@ -224,22 +226,25 @@ for r in range(rows):
                 unsafe_allow_html=True
             )
 
-            # BUTTONS INSIDE CARD
-            b1, b2, b3 = st.columns([1, 1, 1])
+            # CENTERED BUTTON ROW
+            c1, c2, c3 = st.columns([1, 2, 1])
 
-            with b1:
-                if st.button("➖", key=f"dec_{name}"):
-                    st.session_state.counters[name]["value"] -= step
-                    st.rerun()
+            with c2:
+                b1, b2, b3 = st.columns([1, 2, 1])
 
-            with b2:
-                if st.button("0", key=f"reset_{name}"):
-                    st.session_state.counters[name]["value"] = st.session_state.counters[name]["reset"]
-                    st.rerun()
+                with b1:
+                    if st.button("➖", key=f"dec_{name}"):
+                        st.session_state.counters[name]["value"] -= step
+                        st.rerun()
 
-            with b3:
-                if st.button("➕", key=f"inc_{name}"):
-                    st.session_state.counters[name]["value"] += step
-                    st.rerun()
+                with b2:
+                    if st.button(f"Reset to: {reset_val}", key=f"reset_{name}"):
+                        st.session_state.counters[name]["value"] = reset_val
+                        st.rerun()
+
+                with b3:
+                    if st.button("➕", key=f"inc_{name}"):
+                        st.session_state.counters[name]["value"] += step
+                        st.rerun()
 
         index += 1
