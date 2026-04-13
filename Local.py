@@ -61,26 +61,10 @@ with col2:
 st.divider()
 
 # -------------------------
-# FIX: iOS COLUMN + BUTTON STABILITY
+# CSS (CRITICAL IOS FIX)
 # -------------------------
 st.markdown("""
 <style>
-/* IMPORTANT: prevents iOS column wrapping */
-[data-testid="column"] {
-    min-width: 0 !important;
-}
-
-/* buttons must not force layout expansion */
-div.stButton > button {
-    width: 100% !important;
-    min-width: 0 !important;
-    padding: 0.25rem !important;
-    font-size: 14px !important;
-    white-space: nowrap !important;
-    overflow: hidden;
-}
-
-/* card styling */
 .card-title {
     text-align:center;
     font-size:18px;
@@ -93,11 +77,31 @@ div.stButton > button {
     font-weight:bold;
     margin-bottom:10px;
 }
+
+/* FLEX ROW FOR BUTTONS (iOS SAFE) */
+.btn-row {
+    display: flex;
+    gap: 6px;
+    width: 100%;
+}
+
+.btn-row button {
+    flex: 1 !important;
+    min-width: 0 !important;
+    padding: 0.25rem !important;
+    font-size: 14px !important;
+    white-space: nowrap !important;
+}
+
+/* IMPORTANT: prevents iOS column shrink issues elsewhere */
+[data-testid="column"] {
+    min-width: 0 !important;
+}
 </style>
 """, unsafe_allow_html=True)
 
 # -------------------------
-# RENDER
+# RENDER COUNTERS
 # -------------------------
 for name, data in st.session_state.counters.items():
 
@@ -121,20 +125,21 @@ for name, data in st.session_state.counters.items():
             unsafe_allow_html=True
         )
 
-        # 🔥 FIXED COLUMN RATIOS (THIS IS KEY FOR IOS)
-        c1, c2, c3 = st.columns([0.9, 1.6, 0.9], gap="small")
+        # -------------------------
+        # BUTTON ROW (FIXED FOR IOS)
+        # -------------------------
+        st.markdown("<div class='btn-row'>", unsafe_allow_html=True)
 
-        with c1:
-            if st.button("➖", key=f"dec_{name}"):
-                st.session_state.counters[name]["value"] -= step
-                st.rerun()
+        if st.button("➖", key=f"dec_{name}"):
+            st.session_state.counters[name]["value"] -= step
+            st.rerun()
 
-        with c2:
-            if st.button(f"{data['reset']}", key=f"reset_{name}"):
-                st.session_state.counters[name]["value"] = data["reset"]
-                st.rerun()
+        if st.button(f"{data['reset']}", key=f"reset_{name}"):
+            st.session_state.counters[name]["value"] = data["reset"]
+            st.rerun()
 
-        with c3:
-            if st.button("➕", key=f"inc_{name}"):
-                st.session_state.counters[name]["value"] += step
-                st.rerun()
+        if st.button("➕", key=f"inc_{name}"):
+            st.session_state.counters[name]["value"] += step
+            st.rerun()
+
+        st.markdown("</div>", unsafe_allow_html=True)
