@@ -45,7 +45,7 @@ if "counter_steps" not in st.session_state:
 
 
 # -------------------------
-# SAFE RESIZE
+# RESIZE SAFE
 # -------------------------
 def resize(lst, default):
     lst = list(lst)
@@ -59,7 +59,7 @@ st.session_state.counter_steps = resize(st.session_state.counter_steps, 1)
 
 
 # -------------------------
-# CUSTOMIZE COUNTERS
+# CUSTOMIZE COUNTERS (MATRIX)
 # -------------------------
 with st.expander("✏️ Customize Counters"):
 
@@ -98,13 +98,12 @@ with st.expander("✏️ Customize Counters"):
 
 
 # -------------------------
-# DISPLAY COUNTERS (CUSTOM LAYOUT)
+# DISPLAY COUNTERS
 # -------------------------
 for i in range(num_counters):
 
     name = st.session_state.counter_names[i]
     color = COLOR_MAP.get(st.session_state.counter_colors[i], "#FFFFFF")
-    step = st.session_state.counter_steps[i]
 
     st.markdown(
         f"""
@@ -118,9 +117,6 @@ for i in range(num_counters):
         ">
             <div style="font-size:18px;font-weight:600;">
                 {name}
-            </div>
-
-            <div style="font-size:42px;font-weight:bold;margin-top:8px;">
                 {st.session_state.counter_values[i]}
             </div>
         </div>
@@ -128,17 +124,9 @@ for i in range(num_counters):
         unsafe_allow_html=True
     )
 
-    # -------------------------
-    # -  VALUE  +
-    # -------------------------
-    col1, col2, col3 = st.columns([1, 3, 1])
-
-    with col1:
-        if st.button("➖", key=f"minus_{i}"):
-            st.session_state.counter_values[i] -= step
-            st.rerun()
-
-    with col3:
-        if st.button("➕", key=f"plus_{i}"):
-            st.session_state.counter_values[i] += step
-            st.rerun()
+    st.session_state.counter_values[i] = st.number_input(
+        "",
+        value=st.session_state.counter_values[i],
+        step=st.session_state.counter_steps[i],
+        key=f"value_{i}"
+    )
