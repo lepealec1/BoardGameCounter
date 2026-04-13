@@ -1,29 +1,32 @@
+
 import streamlit as st
 st.markdown("""
 <style>
 
-/* Make number input container taller */
+/* ENTIRE number input container */
 div[data-testid="stNumberInput"] {
-    height: 70px;
+    height: 90px !important;
+    margin-bottom: 14px;
 }
 
-/* Increase input text size */
+/* input field (middle box) */
 div[data-testid="stNumberInput"] input {
-    font-size: 28px !important;
+    font-size: 30px !important;
+    height: 70px !important;
     text-align: center;
 }
 
-/* Make + / - buttons BIGGER */
+/* + / - buttons */
 div[data-testid="stNumberInput"] button {
-    font-size: 26px !important;
-    width: 70px !important;
+    font-size: 30px !important;
+    width: 80px !important;
     height: 70px !important;
-    border-radius: 12px !important;
+    border-radius: 14px !important;
 }
 
-/* Improve spacing */
-div[data-testid="stNumberInput"] {
-    margin-bottom: 10px;
+/* make layout feel less cramped */
+div[data-testid="stNumberInput"] > div {
+    align-items: stretch;
 }
 
 </style>
