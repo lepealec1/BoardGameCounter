@@ -27,7 +27,6 @@ COLOR_NAMES = list(COLOR_MAP.keys())
 # -------------------------
 DEFAULT_NAMES = ["Counter 1", "Counter 2", "Counter 3", "Counter 4"]
 DEFAULT_COLORS = ["Blue", "Red", "Green", "Yellow"]
-DEFAULT_COUNTERS = 4
 
 # -------------------------
 # GRID INPUTS
@@ -50,7 +49,7 @@ num_counters = int(
         "Number of counters",
         min_value=1,
         max_value=50,
-        value=DEFAULT_COUNTERS,
+        value=4,
         step=1
     )
 )
@@ -80,7 +79,7 @@ if len(st.session_state.counters) != num_counters:
             color = DEFAULT_COLORS[i]
         else:
             name = f"Counter {i+1}"
-            color = "Grey"
+            color = "White"
 
         new_state[name] = {
             "value": 0,
@@ -138,7 +137,7 @@ st.divider()
 # -------------------------
 # GLOBAL CONTROLS
 # -------------------------
-col1, col2 = st.columns([2, 2])
+col1, col2 = st.columns(2)
 
 with col1:
     step = st.number_input("Step", value=1, step=1)
@@ -172,21 +171,21 @@ st.divider()
 st.markdown("""
 <style>
 .counter-card {
-    padding: 16px;
-    border-radius: 18px;
-    margin-bottom: 12px;
+    padding: 14px;
+    border-radius: 16px;
+    margin-bottom: 10px;
     border: 1px solid #ddd;
 }
 
 .big-number {
-    font-size: 42px;
+    font-size: 40px;
     text-align: center;
     font-weight: bold;
-    margin: 10px 0;
+    margin: 8px 0;
 }
 
 div.stButton > button {
-    height: 50px;
+    height: 45px;
     font-size: 16px;
     border-radius: 10px;
 }
@@ -194,7 +193,7 @@ div.stButton > button {
 """, unsafe_allow_html=True)
 
 # -------------------------
-# GRID RENDER
+# GRID RENDER (BUTTONS INSIDE CARD)
 # -------------------------
 items = list(st.session_state.counters.items())
 
@@ -225,19 +224,20 @@ for r in range(rows):
                 unsafe_allow_html=True
             )
 
-            c1, c2, c3 = st.columns([1, 1, 1])
+            # BUTTONS INSIDE CARD
+            b1, b2, b3 = st.columns([1, 1, 1])
 
-            with c1:
+            with b1:
                 if st.button("➖", key=f"dec_{name}"):
                     st.session_state.counters[name]["value"] -= step
                     st.rerun()
 
-            with c2:
+            with b2:
                 if st.button("0", key=f"reset_{name}"):
                     st.session_state.counters[name]["value"] = st.session_state.counters[name]["reset"]
                     st.rerun()
 
-            with c3:
+            with b3:
                 if st.button("➕", key=f"inc_{name}"):
                     st.session_state.counters[name]["value"] += step
                     st.rerun()
