@@ -3,30 +3,30 @@ import streamlit as st
 st.markdown("""
 <style>
 
-/* ENTIRE number input container */
+/* wrapper (DON'T set height here) */
 div[data-testid="stNumberInput"] {
-    height: 90px !important;
     margin-bottom: 14px;
 }
 
-/* input field (middle box) */
+/* input field */
 div[data-testid="stNumberInput"] input {
     font-size: 30px !important;
-    height: 70px !important;
+    height: 60px !important;
+    line-height: 60px !important;
     text-align: center;
 }
 
 /* + / - buttons */
 div[data-testid="stNumberInput"] button {
-    font-size: 30px !important;
-    width: 80px !important;
-    height: 70px !important;
-    border-radius: 14px !important;
+    font-size: 28px !important;
+    width: 70px !important;
+    height: 60px !important;
+    border-radius: 12px !important;
 }
 
-/* make layout feel less cramped */
+/* prevent vertical clipping */
 div[data-testid="stNumberInput"] > div {
-    align-items: stretch;
+    align-items: center !important;
 }
 
 </style>
